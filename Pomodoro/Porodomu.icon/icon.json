@@ -1,0 +1,76 @@
+{
+  "fill" : {
+    "automatic-gradient" : "display-p3:0.96078,0.96078,0.96863,1.00000"
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "fill-specializations" : [
+            {
+              "appearance" : "dark",
+              "value" : {
+                "automatic-gradient" : "display-p3:0.49949,0.85879,0.31991,1.00000"
+              }
+            }
+          ],
+          "glass" : true,
+          "image-name" : "calyx5 2.png",
+          "name" : "calyx5 2",
+          "position" : {
+            "scale" : 0.9,
+            "translation-in-points" : [
+              100,
+              -33
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    },
+    {
+      "layers" : [
+        {
+          "blend-mode-specializations" : [
+            {
+              "appearance" : "dark",
+              "value" : "normal"
+            }
+          ],
+          "hidden" : false,
+          "image-name" : "tomato-slice.png",
+          "name" : "tomato-slice",
+          "opacity" : 1,
+          "position" : {
+            "scale" : 1.53,
+            "translation-in-points" : [
+              0,
+              0
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}

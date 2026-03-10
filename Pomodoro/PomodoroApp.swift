@@ -21,7 +21,15 @@ struct PomodoroApp: App {
                     setupOverlayObserver()
                 }
         } label: {
-            Text(timerManager.menuBarTitle)
+            HStack(spacing: 4) {
+                if let image = timerManager.currentSession.iconImage(isRunning: timerManager.isRunning) {
+                    Image(nsImage: image)
+                }
+                
+                // if timerManager.isRunning {
+                //     Text(timerManager.formattedTime)
+                // }
+            }
         }
         .menuBarExtraStyle(.window)
     }

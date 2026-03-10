@@ -2,10 +2,26 @@ import Foundation
 import UserNotifications
 
 /// Manages system notifications for the Pomodoro app
-class NotificationManager {
+class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     
-    init() {
+    var onAction: ((String) -> Void)?
+    
+    override init() {
+        super.init()
+        setupCategories()
         requestPermission()
+        UNUserNotificationCenter.current().delegate = self
+    }
+    
+    private func setupCategories() {
+        let restAction = UNNotificationAction(identifier: "ACTION_REST", title: "休息", options: [])
+        let pauseAction = UNNotificationAction(identifier: "ACTION_PAUSE", title: "暂停", options: [])
+        let continueAction = UNNotificationAction(identifier: "ACTION_CONTINUE", title: "继续", options: [])
+        
+        let workCategory = UNNotificationCategory(identifier: "WORK_COMPLETE", actions: [restAction, pauseAction], intentIdentifiers: [], options: [])
+        let breakCategory = UNNotificationCategory(identifier: "BREAK_COMPLETE", actions: [continueAction, pauseAction], intentIdentifiers: [], options: [])
+        
+        UNUserNotificationCenter.current().setNotificationCategories([workCategory, breakCategory])
     }
     
     /// Request notification permissions from the user
@@ -23,17 +39,20 @@ class NotificationManager {
         
         switch session {
         case .work:
-            content.title = "Work Session Complete! \(session.icon)"
-            content.body = "Great job! Time for a break."
+            content.title = "工作结束！ \(session.iconEmoji)"
+            content.body = "做得好！该休息一下了。"
             content.sound = .default
+            content.categoryIdentifier = "WORK_COMPLETE"
         case .shortBreak:
-            content.title = "Break's Over! \(session.icon)"
-            content.body = "Ready to focus again?"
+            content.title = "休息结束！ \(session.iconEmoji)"
+            content.body = "准备好再次专注了吗？"
             content.sound = .default
+            content.categoryIdentifier = "BREAK_COMPLETE"
         case .longBreak:
-            content.title = "Long Break Complete! \(session.icon)"
-            content.body = "Feeling refreshed? Let's get back to work!"
+            content.title = "长休息结束！ \(session.iconEmoji)"
+            content.body = "感觉神清气爽？我们继续工作吧！"
             content.sound = .default
+            content.categoryIdentifier = "BREAK_COMPLETE"
         }
         
         let request = UNNotificationRequest(
@@ -47,5 +66,20 @@ class NotificationManager {
                 print("Failed to send notification: \(error.localizedDescription)")
             }
         }
+    }
+    
+    // MARK: - UNUserNotificationCenterDelegate
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        let actionIdentifier = response.actionIdentifier
+        
+        if actionIdentifier == UNNotificationDefaultActionIdentifier {
+            // User clicked the notification directly
+            onAction?("ACTION_CONTINUE") // This acts as both 'Rest' and 'Continue' since TimerManager just calls start()
+        } else {
+            onAction?(actionIdentifier)
+        }
+        
+        completionHandler()
     }
 }

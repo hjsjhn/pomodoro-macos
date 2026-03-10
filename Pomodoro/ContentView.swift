@@ -9,7 +9,7 @@ struct ContentView: View {
         VStack(spacing: 20) {
             // Header
             HStack {
-                Text("\(timerManager.currentSession.icon) Pomodoro")
+                Text("\(timerManager.currentSession.iconEmoji) Pomodoro")
                     .font(.headline)
                     .foregroundStyle(.secondary)
                 

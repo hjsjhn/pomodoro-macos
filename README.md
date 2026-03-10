@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="screenshots/Pomodoro.png" alt="Pomodoro" width="240" />
+</p>
+
 # Pomodoro macOS
 
 A minimal, beautiful Pomodoro timer that lives in your macOS menu bar.

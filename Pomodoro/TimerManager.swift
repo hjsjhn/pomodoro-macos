@@ -45,6 +45,27 @@ class TimerManager {
     init(settings: SettingsManager) {
         self.settings = settings
         self.timeRemaining = settings.duration(for: .work)
+        
+        setupNotificationActions()
+    }
+    
+    private func setupNotificationActions() {
+        notificationManager.onAction = { [weak self] action in
+            DispatchQueue.main.async {
+                self?.handleNotificationAction(action)
+            }
+        }
+    }
+    
+    private func handleNotificationAction(_ action: String) {
+        switch action {
+        case "ACTION_REST", "ACTION_CONTINUE":
+            start()
+        case "ACTION_PAUSE":
+            pause()
+        default:
+            break
+        }
     }
     
     // MARK: - Computed Properties
@@ -62,15 +83,7 @@ class TimerManager {
         return (total - timeRemaining) / total
     }
     
-    /// Menu bar display text
-    var menuBarTitle: String {
-        if isRunning {
-            return "\(currentSession.icon) \(formattedTime)"
-        } else {
-            return "\(currentSession.icon)"
-        }
-    }
-    
+
     // MARK: - Timer Controls
     
     /// Start or resume the timer

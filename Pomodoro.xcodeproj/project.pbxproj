@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		80581BE62F606143004316EC /* Porodomu.icon in Resources */ = {isa = PBXBuildFile; fileRef = 80581BE52F606143004316EC /* Porodomu.icon */; };
 		A1000001227F3E4B00000001 /* PomodoroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001227F3E4A00000001 /* PomodoroApp.swift */; };
 		A1000001227F3E4B00000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001227F3E4A00000002 /* ContentView.swift */; };
 		A1000001227F3E4B00000003 /* TimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001227F3E4A00000003 /* TimerManager.swift */; };
@@ -20,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		80581BE52F606143004316EC /* Porodomu.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = Porodomu.icon; sourceTree = "<group>"; };
 		A1000001227F3E4A00000000 /* Pomodoro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pomodoro.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1000001227F3E4A00000001 /* PomodoroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroApp.swift; sourceTree = "<group>"; };
 		A1000001227F3E4A00000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -45,7 +47,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A1000001227F3E4900000000 /* Root */ = {
+		A1000001227F3E4900000000 = {
 			isa = PBXGroup;
 			children = (
 				A1000001227F3E4900000002 /* Pomodoro */,
@@ -67,6 +69,7 @@
 				A1000001227F3E4A0000000B /* SettingsView.swift */,
 				A1000001227F3E4A00000006 /* Assets.xcassets */,
 				A1000001227F3E4A00000007 /* Pomodoro.entitlements */,
+				80581BE52F606143004316EC /* Porodomu.icon */,
 			);
 			path = Pomodoro;
 			sourceTree = "<group>";
@@ -107,7 +110,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1500;
+				LastUpgradeCheck = 2630;
 				TargetAttributes = {
 					A1000001227F3E4900000004 = {
 						CreatedOnToolsVersion = 15.0;
@@ -122,7 +125,7 @@
 				en,
 				Base,
 			);
-			mainGroup = A1000001227F3E4900000000 /* Root */;
+			mainGroup = A1000001227F3E4900000000;
 			productRefGroup = A1000001227F3E4900000003 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -138,6 +141,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1000001227F3E4B00000006 /* Assets.xcassets in Resources */,
+				80581BE62F606143004316EC /* Porodomu.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -197,6 +201,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -220,6 +225,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -259,6 +265,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -275,6 +282,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 			};
 			name = Release;
@@ -282,16 +290,17 @@
 		A1000001227F3E4C00000005 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Pomodoro/Pomodoro.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSUIElement = YES;
+INFOPLIST_KEY_CFBundleIconFile = Porodomu;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -308,16 +317,19 @@
 		A1000001227F3E4C00000006 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = Porodomu;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Pomodoro/Pomodoro.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSUIElement = YES;
+INFOPLIST_KEY_CFBundleIconFile = Porodomu;
+				INFOPLIST_KEY_CFBundleIconFile = Porodomu;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
