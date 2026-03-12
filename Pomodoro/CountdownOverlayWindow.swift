@@ -6,10 +6,10 @@ class CountdownOverlayWindow {
     private var window: NSWindow?
     
     /// Show the countdown overlay on all screens
-    func show(number: Int) {
+    func show(number: Int, sessionType: SessionType) {
         // If window already exists, just update it
         if let window = window {
-            updateContent(number: number)
+            updateContent(number: number, sessionType: sessionType)
             return
         }
         
@@ -33,7 +33,7 @@ class CountdownOverlayWindow {
         window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         
         // Set the SwiftUI content
-        window.contentView = NSHostingView(rootView: CountdownOverlayView(number: number))
+        window.contentView = NSHostingView(rootView: CountdownOverlayView(number: number, sessionType: sessionType))
         
         // Show the window
         window.orderFrontRegardless()
@@ -42,8 +42,8 @@ class CountdownOverlayWindow {
     }
     
     /// Update the countdown number
-    func updateContent(number: Int) {
-        window?.contentView = NSHostingView(rootView: CountdownOverlayView(number: number))
+    func updateContent(number: Int, sessionType: SessionType) {
+        window?.contentView = NSHostingView(rootView: CountdownOverlayView(number: number, sessionType: sessionType))
     }
     
     /// Hide and release the overlay window
