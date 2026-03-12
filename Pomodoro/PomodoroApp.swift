@@ -45,7 +45,7 @@ struct PomodoroApp: App {
     
     private func updateOverlay() {
         if timerManager.showCountdownOverlay {
-            overlayWindow.show(number: timerManager.countdownNumber, sessionType: timerManager.currentSession)
+            overlayWindow.show(timerManager: timerManager)
         } else {
             if overlayWindow.isVisible {
                 overlayWindow.hide()

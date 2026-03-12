@@ -6,10 +6,11 @@ class CountdownOverlayWindow {
     private var window: NSWindow?
     
     /// Show the countdown overlay on all screens
-    func show(number: Int, sessionType: SessionType) {
-        // If window already exists, just update it
+    func show(timerManager: TimerManager) {
+        // If window already exists, it will automatically update because
+        // NSHostingView is bound to the @Bindable TimerManager. We just need to ensure it's visible.
         if let window = window {
-            updateContent(number: number, sessionType: sessionType)
+            window.orderFrontRegardless()
             return
         }
         
@@ -29,11 +30,12 @@ class CountdownOverlayWindow {
         window.backgroundColor = .clear
         window.isOpaque = false
         window.hasShadow = false
-        window.ignoresMouseEvents = true  // Click-through
+        // Enable mouse events so buttons can be clicked
+        window.ignoresMouseEvents = false
         window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         
         // Set the SwiftUI content
-        window.contentView = NSHostingView(rootView: CountdownOverlayView(number: number, sessionType: sessionType))
+        window.contentView = NSHostingView(rootView: CountdownOverlayView(timerManager: timerManager))
         
         // Show the window
         window.orderFrontRegardless()
@@ -42,8 +44,9 @@ class CountdownOverlayWindow {
     }
     
     /// Update the countdown number
-    func updateContent(number: Int, sessionType: SessionType) {
-        window?.contentView = NSHostingView(rootView: CountdownOverlayView(number: number, sessionType: sessionType))
+    func updateContent(timerManager: TimerManager) {
+        // No longer needed because the root view is already observing TimerManager natively.
+        // Re-creating the NSHostingView on every tick was causing the UI to flash and reset its state.
     }
     
     /// Hide and release the overlay window

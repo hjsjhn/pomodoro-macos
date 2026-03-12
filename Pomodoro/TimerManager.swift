@@ -24,9 +24,9 @@ class TimerManager {
     /// Auto-mode: automatically start next session
     var isAutoMode: Bool = false
     
-    /// Whether to show the countdown overlay (last 5 seconds)
+    /// Whether to show the countdown overlay (last 5 seconds or waiting for action/auto-transition)
     var showCountdownOverlay: Bool {
-        return isRunning && timeRemaining <= 5 && timeRemaining > 0
+        return (isRunning && timeRemaining <= 5 && timeRemaining >= 0) || isWaitingForAction || (autoTransitionMessage != nil)
     }
     
     /// Current countdown number for overlay (3, 2, or 1)
@@ -34,10 +34,13 @@ class TimerManager {
         return Int(ceil(timeRemaining))
     }
     
+    // MARK: - Overlay state
+    var isWaitingForAction: Bool = false
+    var autoTransitionMessage: String? = nil
+    
     // MARK: - Private Properties
     
     private var timer: Timer?
-    private var notificationManager = NotificationManager()
     private let settings: SettingsManager
     
     // MARK: - Initialization
@@ -45,27 +48,20 @@ class TimerManager {
     init(settings: SettingsManager) {
         self.settings = settings
         self.timeRemaining = settings.duration(for: .work)
-        
-        setupNotificationActions()
     }
     
-    private func setupNotificationActions() {
-        notificationManager.onAction = { [weak self] action in
-            DispatchQueue.main.async {
-                self?.handleNotificationAction(action)
-            }
-        }
+    // MARK: - Overlay Actions
+    
+    func overlayActionContinue() {
+        isWaitingForAction = false
+        moveToNextSession()
+        start()
     }
     
-    private func handleNotificationAction(_ action: String) {
-        switch action {
-        case "ACTION_REST", "ACTION_CONTINUE":
-            start()
-        case "ACTION_PAUSE":
-            pause()
-        default:
-            break
-        }
+    func overlayActionPause() {
+        isWaitingForAction = false
+        moveToNextSession()
+        // Does not start, remains paused
     }
     
     // MARK: - Computed Properties
@@ -139,27 +135,46 @@ class TimerManager {
     private func tick() {
         if timeRemaining > 0 {
             timeRemaining -= 1
-        } else {
-            sessionCompleted()
+            if timeRemaining == 0 {
+                sessionCompleted()
+            }
         }
     }
     
     private func sessionCompleted() {
         pause()
         
-        // Send notification
-        notificationManager.sendSessionCompleteNotification(session: currentSession)
-        
         // Update completed pomodoros if work session finished
         if currentSession == .work {
             completedPomodoros += 1
         }
         
-        moveToNextSession()
-        
-        // Auto-start next session if enabled
         if isAutoMode {
-            start()
+            // Determine next session name for message
+            var nextType: SessionType
+            if currentSession == .work {
+                if completedPomodoros > 0 && completedPomodoros % pomodorosBeforeLongBreak == 0 {
+                    nextType = .longBreak
+                } else {
+                    nextType = .shortBreak
+                }
+            } else {
+                nextType = .work
+            }
+            
+            let message = nextType == .work ? "现在继续之前的工作" : "现在开始休息"
+            autoTransitionMessage = message
+            
+            // Auto-start after a brief delay so the user reads the message
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) { [weak self] in
+                guard let self = self else { return }
+                self.autoTransitionMessage = nil
+                self.moveToNextSession()
+                self.start()
+            }
+        } else {
+            // Wait for user to interact with overlay buttons
+            isWaitingForAction = true
         }
     }
     
