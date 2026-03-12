@@ -13,8 +13,13 @@ A minimal, beautiful Pomodoro timer that lives in your macOS menu bar.
 ## Screenshots
 
 <p align="center">
-  <img src="screenshots/in-app.jpeg" alt="Pomodoro App" width="500">
+  <img src="screenshots/Pomodoro-Screenshots.png" alt="Pomodoro App" width="500">
 </p>
+
+<div style="display: flex; justify-content: space-between; gap: 8px;">
+  <img src="screenshots/Pomodoro-Countdown.png" alt="Pomodoro App" width="49%">
+  <img src="screenshots/Pomodoro-Countdown-End.png" alt="Pomodoro App" width="49%">
+</div>
 
 ## Features
 
