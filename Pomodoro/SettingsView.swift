@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @Bindable var settings: SettingsManager
+    @State private var updateManager = UpdateManager()
     var onDurationChange: () -> Void
     
     var body: some View {
@@ -27,7 +28,7 @@ struct SettingsView: View {
                 
                 DurationRow(
                     icon: "☕️",
-                    label: "Short Break",
+                    label: "Short\nBreak",
                     value: $settings.shortBreakDuration,
                     range: 1...30,
                     onChange: onDurationChange
@@ -35,14 +36,12 @@ struct SettingsView: View {
                 
                 DurationRow(
                     icon: "🌴",
-                    label: "Long Break",
+                    label: "Long\nBreak",
                     value: $settings.longBreakDuration,
                     range: 1...30,
                     onChange: onDurationChange
                 )
             }
-            
-            Divider()
             
             // Reset Button
             Button {
@@ -57,9 +56,81 @@ struct SettingsView: View {
             .onHover { hovering in
                 if hovering { NSCursor.pointingHand.push() } else { NSCursor.pop() }
             }
+            
+            Divider()
+            
+            // Check for Updates Section
+            VStack {
+                if updateManager.isChecking {
+                    ProgressView()
+                        .controlSize(.small)
+                } else if updateManager.isDownloading {
+                    ProgressView(value: updateManager.downloadProgress)
+                        .progressViewStyle(.linear)
+                        .frame(maxWidth: 150)
+                    Text("Downloading... \(Int(updateManager.downloadProgress * 100))%")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                } else {
+                    switch updateManager.updateStatus {
+                    case .idle:
+                        updateButton(title: "Check for Updates", icon: "arrow.triangle.2.circlepath") {
+                            updateManager.checkForUpdates()
+                        }
+                    case .upToDate:
+                        HStack {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundStyle(.green)
+                            Text("Up to date")
+                                .font(.caption)
+                        }
+                    case .updateAvailable(let version, let asset):
+                        VStack(spacing: 4) {
+                            Text("Version \(version) available!")
+                                .font(.caption)
+                                .foregroundStyle(.blue)
+                                .fixedSize(horizontal: true, vertical: false)
+                            
+                            updateButton(title: "Download & Install", icon: "arrow.down.circle") {
+                                updateManager.downloadAndOpenUpdate(asset: asset)
+                            }
+                        }
+                    case .error(let message):
+                        Text(message)
+                            .font(.caption2)
+                            .foregroundStyle(.red)
+                            .multilineTextAlignment(.center)
+                            .lineLimit(2)
+                        
+                        updateButton(title: "Try Again", icon: "arrow.triangle.2.circlepath") {
+                            updateManager.checkForUpdates()
+                        }
+                    }
+                }
+            }
         }
         .padding(16)
-        .frame(width: 220)
+        .frame(width: 215)
+    }
+    
+    // MARK: - Helpers
+    
+    @ViewBuilder
+    private func updateButton(title: String, icon: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                Image(systemName: icon)
+                Text(title)
+            }
+            .font(.caption)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 4)
+            .background(Capsule().fill(Color.secondary.opacity(0.1)))
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering in
+            if hovering { NSCursor.pointingHand.push() } else { NSCursor.pop() }
+        }
     }
 }
 
@@ -75,6 +146,8 @@ struct DurationRow: View {
             Text(icon)
             Text(label)
                 .foregroundStyle(.secondary)
+                .multilineTextAlignment(.leading)
+                .fixedSize()
             
             Spacer()
             
