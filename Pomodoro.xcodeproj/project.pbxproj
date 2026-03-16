@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		80581BE62F606143004316EC /* Porodomu.icon in Resources */ = {isa = PBXBuildFile; fileRef = 80581BE52F606143004316EC /* Porodomu.icon */; };
+		A1000001227E3E4C0000000D /* UpdateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001227E3E4C0000000C /* UpdateManager.swift */; };
+		A1000001227E3E4C0000000F /* BreakOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001227E3E4C0000000E /* BreakOverlay.swift */; };
 		A1000001227F3E4B00000001 /* PomodoroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001227F3E4A00000001 /* PomodoroApp.swift */; };
 		A1000001227F3E4B00000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001227F3E4A00000002 /* ContentView.swift */; };
 		A1000001227F3E4B00000003 /* TimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001227F3E4A00000003 /* TimerManager.swift */; };
@@ -18,11 +20,12 @@
 		A1000001227F3E4B00000008 /* CountdownOverlayWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001227F3E4A00000009 /* CountdownOverlayWindow.swift */; };
 		A1000001227F3E4B00000009 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001227F3E4A0000000A /* SettingsManager.swift */; };
 		A1000001227F3E4B0000000A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001227F3E4A0000000B /* SettingsView.swift */; };
-		A1000001227E3E4C0000000D /* UpdateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001227E3E4C0000000C /* UpdateManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		80581BE52F606143004316EC /* Porodomu.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = Porodomu.icon; sourceTree = "<group>"; };
+		A1000001227E3E4C0000000C /* UpdateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateManager.swift; sourceTree = "<group>"; };
+		A1000001227E3E4C0000000E /* BreakOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreakOverlay.swift; sourceTree = "<group>"; };
 		A1000001227F3E4A00000000 /* Pomodoro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pomodoro.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1000001227F3E4A00000001 /* PomodoroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroApp.swift; sourceTree = "<group>"; };
 		A1000001227F3E4A00000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -35,7 +38,6 @@
 		A1000001227F3E4A00000009 /* CountdownOverlayWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownOverlayWindow.swift; sourceTree = "<group>"; };
 		A1000001227F3E4A0000000A /* SettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
 		A1000001227F3E4A0000000B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		A1000001227E3E4C0000000C /* UpdateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +72,7 @@
 				A1000001227F3E4A0000000A /* SettingsManager.swift */,
 				A1000001227F3E4A0000000B /* SettingsView.swift */,
 				A1000001227E3E4C0000000C /* UpdateManager.swift */,
+				A1000001227E3E4C0000000E /* BreakOverlay.swift */,
 				A1000001227F3E4A00000006 /* Assets.xcassets */,
 				A1000001227F3E4A00000007 /* Pomodoro.entitlements */,
 				80581BE52F606143004316EC /* Porodomu.icon */,
@@ -165,6 +168,7 @@
 				A1000001227F3E4B00000009 /* SettingsManager.swift in Sources */,
 				A1000001227F3E4B0000000A /* SettingsView.swift in Sources */,
 				A1000001227E3E4C0000000D /* UpdateManager.swift in Sources */,
+				A1000001227E3E4C0000000F /* BreakOverlay.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -298,7 +302,7 @@
 				CODE_SIGN_ENTITLEMENTS = Pomodoro/Pomodoro.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
@@ -310,7 +314,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.personal.Pomodoro;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -326,7 +330,7 @@
 				CODE_SIGN_ENTITLEMENTS = Pomodoro/Pomodoro.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
@@ -338,7 +342,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.personal.Pomodoro;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

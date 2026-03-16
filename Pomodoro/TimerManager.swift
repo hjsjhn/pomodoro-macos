@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import AppKit
 
 /// Manages the Pomodoro timer state and logic
 @Observable
@@ -26,6 +27,9 @@ class TimerManager {
     
     /// Whether to show the countdown overlay (last 5 seconds or waiting for action/auto-transition)
     var showCountdownOverlay: Bool {
+        if settings.isForcedBreakEnabled && currentSession != .work {
+            return isRunning || isWaitingForAction // Always show during break if forced
+        }
         return (isRunning && timeRemaining <= 5 && timeRemaining >= 0) || isWaitingForAction || (autoTransitionMessage != nil)
     }
     
@@ -34,14 +38,13 @@ class TimerManager {
         return Int(ceil(timeRemaining))
     }
     
-    // MARK: - Overlay state
     var isWaitingForAction: Bool = false
     var autoTransitionMessage: String? = nil
     
     // MARK: - Private Properties
     
     private var timer: Timer?
-    private let settings: SettingsManager
+    let settings: SettingsManager
     
     // MARK: - Initialization
     
@@ -121,6 +124,11 @@ class TimerManager {
             completedPomodoros += 1
         }
         moveToNextSession()
+        
+        // Automatically start the next session if forced breaks are enabled
+        if settings.isForcedBreakEnabled && currentSession != .work {
+            start()
+        }
     }
     
     /// Refresh duration from settings (call when settings change)
@@ -147,6 +155,12 @@ class TimerManager {
         // Update completed pomodoros if work session finished
         if currentSession == .work {
             completedPomodoros += 1
+            
+            if settings.isForcedBreakEnabled {
+                moveToNextSession()
+                start()
+                return
+            }
         }
         
         if isAutoMode {

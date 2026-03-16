@@ -8,6 +8,7 @@ class SettingsManager {
         static let workDuration = "workDuration"
         static let shortBreakDuration = "shortBreakDuration"
         static let longBreakDuration = "longBreakDuration"
+        static let isForcedBreakEnabled = "isForcedBreakEnabled"
     }
     
     // MARK: - Default Values
@@ -15,6 +16,7 @@ class SettingsManager {
         static let workDuration: Int = 25
         static let shortBreakDuration: Int = 5
         static let longBreakDuration: Int = 15
+        static let isForcedBreakEnabled: Bool = false
     }
     
     // MARK: - Properties (in minutes)
@@ -32,6 +34,11 @@ class SettingsManager {
     /// Long break duration in minutes
     var longBreakDuration: Int {
         didSet { UserDefaults.standard.set(longBreakDuration, forKey: Keys.longBreakDuration) }
+    }
+    
+    /// Whether to force breaks and bypass the prompt
+    var isForcedBreakEnabled: Bool {
+        didSet { UserDefaults.standard.set(isForcedBreakEnabled, forKey: Keys.isForcedBreakEnabled) }
     }
     
     // MARK: - Initialization
@@ -57,6 +64,12 @@ class SettingsManager {
         } else {
             self.longBreakDuration = Defaults.longBreakDuration
         }
+        
+        if defaults.object(forKey: Keys.isForcedBreakEnabled) != nil {
+            self.isForcedBreakEnabled = defaults.bool(forKey: Keys.isForcedBreakEnabled)
+        } else {
+            self.isForcedBreakEnabled = Defaults.isForcedBreakEnabled
+        }
     }
     
     // MARK: - Methods
@@ -78,5 +91,6 @@ class SettingsManager {
         workDuration = Defaults.workDuration
         shortBreakDuration = Defaults.shortBreakDuration
         longBreakDuration = Defaults.longBreakDuration
+        isForcedBreakEnabled = Defaults.isForcedBreakEnabled
     }
 }

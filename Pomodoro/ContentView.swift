@@ -4,6 +4,7 @@ struct ContentView: View {
     @Bindable var timerManager: TimerManager
     @Bindable var settings: SettingsManager
     @State private var showSettings = false
+    @State private var showForcedBreakInfo = false
     
     var body: some View {
         VStack(spacing: 20) {
@@ -120,20 +121,56 @@ struct ContentView: View {
                     .foregroundStyle(.tertiary)
             }
             
-            // Auto-mode toggle
-            Toggle(isOn: $timerManager.isAutoMode) {
-                HStack(spacing: 4) {
-                    Image(systemName: "arrow.triangle.2.circlepath")
-                        .font(.caption)
-                    Text("Auto-start next session")
-                        .font(.caption)
+            VStack(alignment: .leading, spacing: 12) {
+                // Auto-mode toggle
+                Toggle(isOn: $timerManager.isAutoMode) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "arrow.triangle.2.circlepath")
+                            .font(.subheadline)
+                            .frame(width: 16)
+                        Text("Auto-start next session")
+                            .font(.subheadline)
+                    }
+                    .foregroundStyle(.secondary)
                 }
-                .foregroundStyle(.secondary)
+                .toggleStyle(.checkbox)
+                .tint(.black)
+                .onHover { hovering in
+                    if hovering { NSCursor.pointingHand.push() } else { NSCursor.pop() }
+                }
+                
+                // Forced break toggle
+                HStack(spacing: 4) {
+                    Toggle(isOn: $settings.isForcedBreakEnabled) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "lock.fill")
+                                .font(.subheadline)
+                                .frame(width: 16)
+                            Text("Forced break-taking")
+                                .font(.subheadline)
+                        }
+                        .foregroundStyle(.secondary)
+                    }
+                    .toggleStyle(.checkbox)
+                    .tint(.black)
+                    .onHover { hovering in
+                        if hovering { NSCursor.pointingHand.push() } else { NSCursor.pop() }
+                    }
+                    
+                    Image(systemName: "info.circle")
+                        .foregroundStyle(.secondary)
+                        .font(.subheadline)
+                        .modifier(IconPressAction(action: { showForcedBreakInfo.toggle() }))
+                        .popover(isPresented: $showForcedBreakInfo, arrowEdge: .top) {
+                            Text("Enabling this will automatically lock all your screens when a break starts, preventing you from using other applications until the break finishes.")
+                                .multilineTextAlignment(.leading)
+                                .font(.subheadline)
+                                .padding()
+                                .frame(width: 240)
+                        }
+                }
             }
-            .toggleStyle(.checkbox)
-            .onHover { hovering in
-                if hovering { NSCursor.pointingHand.push() } else { NSCursor.pop() }
-            }
+            .frame(maxWidth: .infinity, alignment: .leading)
             
             // Quit button
             Button("Quit") {
