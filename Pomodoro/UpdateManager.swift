@@ -178,21 +178,28 @@ class UpdateManager: NSObject, URLSessionDownloadDelegate {
     }
     
     nonisolated func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        // Move file synchronously before URLSession deletes the temp file
         do {
-            let tempDir = FileManager.default.temporaryDirectory
-            let originalFileName = downloadTask.originalRequest?.url?.lastPathComponent ?? "PomodoroUpdate.dmg"
-            let destinationURL = tempDir.appendingPathComponent(originalFileName)
+            // 1. 获取用户真实的 Downloads 目录
+            guard let downloadsURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first else {
+                throw NSError(domain: "UpdateError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot find the Downloads directory"])
+            }
             
-            // If a file with the same name exists, remove it first
+            let originalFileName = downloadTask.originalRequest?.url?.lastPathComponent ?? "PomodoroUpdate.dmg"
+            let destinationURL = downloadsURL.appendingPathComponent(originalFileName)
+            
+            // 2. 如果已存在同名文件，先删除
             if FileManager.default.fileExists(atPath: destinationURL.path) {
                 try FileManager.default.removeItem(at: destinationURL)
             }
             
+            // 3. 将临时下载文件移动到 Downloads 目录
             try FileManager.default.moveItem(at: location, to: destinationURL)
             
+            // 4. 移除隔离属性 (调用你之前写好的 removexattr C API 方法)
+            self.removeQuarantine(at: destinationURL)
+            
             Task { @MainActor in
-                // Open the DMG file automatically
+                // 5. 打开 DMG
                 NSWorkspace.shared.open(destinationURL)
                 self.isDownloading = false
                 self.downloadProgress = 1.0
@@ -201,6 +208,24 @@ class UpdateManager: NSObject, URLSessionDownloadDelegate {
             Task { @MainActor in
                 self.updateStatus = .error("Failed to save DMG: \(error.localizedDescription)")
                 self.isDownloading = false
+            }
+        }
+    }
+    
+    /// Removes the com.apple.quarantine attribute from a file using native C APIs
+    private func removeQuarantine(at url: URL) {
+        // 直接调用系统底层的 removexattr C API，完美绕过沙盒对 Process 的限制
+        let result = removexattr(url.path, "com.apple.quarantine", 0)
+        
+        if result == 0 {
+            print("POMODORO DEBUG: Successfully removed quarantine attribute from \(url.path)")
+        } else {
+            let errorNum = errno
+            // errno 93 (ENOATTR) 表示该文件本来就没有这个属性，属于正常情况
+            if errorNum == ENOATTR {
+                print("POMODORO DEBUG: No quarantine attribute found on \(url.path), skipping.")
+            } else {
+                print("POMODORO DEBUG: Failed to remove quarantine attribute. errno: \(errorNum)")
             }
         }
     }
