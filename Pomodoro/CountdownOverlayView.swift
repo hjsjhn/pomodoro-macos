@@ -1,5 +1,6 @@
 import SwiftUI
 import AppKit
+import Foundation
 
 /// View for the fullscreen countdown overlay
 struct CountdownOverlayView: View {
@@ -7,27 +8,85 @@ struct CountdownOverlayView: View {
     
     @State private var showExitPrompt = false
     @State private var exitText = ""
+    @State private var currentExitPhrase = ""
     @State private var pressedKeys: Set<UInt16> = []
     @State private var clickCount = 0
     @State private var shortcutUnlocked = false
     @State private var recentKeyTimestamps: [Date] = []
     
-    private let requiredClicks = 10
+    // 1. 定义快捷键模型，包含 UI 展示用的字母，和用于逻辑判断的 KeyCode 集合
+    struct EmergencyShortcut {
+        let letters: [String]
+        let keyCodes: Set<UInt16>
+        let displayString: String // 用于 UI 显示，比如 "A+X+G"
+    }
+
+    // 2. macOS 标准 ANSI 键盘的 26 个字母对应的 KeyCode 字典
+    private let letterKeyCodes: [String: UInt16] = [
+        "A": 0,  "B": 11, "C": 8,  "D": 2,  "E": 14, "F": 3,  "G": 5,  "H": 4,  "I": 34,
+        "J": 38, "K": 40, "L": 37, "M": 46, "N": 45, "O": 31, "P": 35, "Q": 12, "R": 15,
+        "S": 1,  "T": 17, "U": 32, "V": 9,  "W": 13, "X": 7,  "Y": 16, "Z": 6
+    ]
+    
+    private let requiredClicks = 20
     // Keyboard mashing: 8 keystrokes within 3 seconds
-    private let mashKeyCount = 15
+    private let mashKeyCount = 30
     private let mashTimeWindow: TimeInterval = 1.0
     
-    let requiredExitPhrase = "I understand the importance of this break, but I must skip it."
+    // let requiredExitPhrase = "I understand the importance of this break, but I must skip it."
     
+    @State private var currentShortcut: EmergencyShortcut? = nil
     // Key codes for E, S, C
-    private let escKeyE: UInt16 = 14   // E
-    private let escKeyS: UInt16 = 1    // S
-    private let escKeyC: UInt16 = 8    // C
+//    private let escKeyE: UInt16 = 14   // E
+//    private let escKeyS: UInt16 = 1    // S
+//    private let escKeyC: UInt16 = 8    // C
+    
+    private func generateLongTediousText(wordCount: Int = 15, minLength: Int = 3, maxLength: Int = 10) -> String {
+        let lowercaseAlphabet = "abcdefghijklmnopqrstuvwxyz"
+        var words: [String] = []
+        
+        for _ in 0..<wordCount {
+            let length = Int.random(in: minLength...maxLength)
+            var currentWord = ""
+            
+            for _ in 0..<length {
+                if let randomChar = lowercaseAlphabet.randomElement() {
+                    currentWord.append(randomChar)
+                }
+            }
+            words.append(currentWord)
+        }
+        
+        return words.joined(separator: " ")
+    }
+    
+    private func generateRandomShortcut(letterCount: Int = 5) -> EmergencyShortcut {
+        var uniqueLetters = Set<String>()
+        let allLetters = Array(letterKeyCodes.keys)
+        
+        // 随机抽取 n 个不重复的字母
+        while uniqueLetters.count < letterCount {
+            if let randomLetter = allLetters.randomElement() {
+                uniqueLetters.insert(randomLetter)
+            }
+        }
+        let lettersArray = Array(uniqueLetters)
+        
+        // 查找这 n 个字母对应的 keyCode
+        let codes = lettersArray.compactMap { letterKeyCodes[$0] }
+        let keyCodesSet = Set(codes)
+        
+        // 生成形如 "E+S+C" 的显示文本
+        let displayString = lettersArray.joined(separator: "+")
+        
+        return EmergencyShortcut(letters: lettersArray, keyCodes: keyCodesSet, displayString: displayString)
+    }
     
     private func checkEmergencyShortcut(flags: NSEvent.ModifierFlags) -> Bool {
-        guard shortcutUnlocked else { return false }
+        guard shortcutUnlocked, let shortcut = currentShortcut else { return false }
         let hasModifiers = flags.contains([.control, .command, .shift])
-        let hasAllKeys = pressedKeys.contains(escKeyE) && pressedKeys.contains(escKeyS) && pressedKeys.contains(escKeyC)
+        let hasAllKeys = shortcut.keyCodes.isSubset(of: pressedKeys)
+        // let hasAllKeys = pressedKeys.contains(escKeyE) && pressedKeys.contains(escKeyS) && pressedKeys.contains(escKeyC)
         return hasModifiers && hasAllKeys
     }
     
@@ -80,8 +139,8 @@ struct CountdownOverlayView: View {
                                 Text("Type the following phrase exactly to force exit:")
                                     .font(.headline)
                                     .foregroundStyle(.white.opacity(0.8))
-                                
-                                Text(requiredExitPhrase)
+                                // currentExitPhrase = generateLongTediousText()
+                                Text(currentExitPhrase)
                                     .font(.system(size: 18, weight: .medium, design: .monospaced))
                                     .foregroundStyle(.white)
                                     .padding(.vertical, 8)
@@ -102,7 +161,7 @@ struct CountdownOverlayView: View {
                                             .stroke(.white.opacity(0.3), lineWidth: 1)
                                     )
                                     .onChange(of: exitText) { _, newValue in
-                                        if newValue == requiredExitPhrase {
+                                        if newValue == currentExitPhrase {
                                             exitText = ""
                                             showExitPrompt = false
                                             timerManager.pause()
@@ -122,7 +181,11 @@ struct CountdownOverlayView: View {
                         VStack(spacing: 8) {
                             // Subtle emergency exit trigger
                             if !showExitPrompt {
-                                Button("Emergency Exit") {
+                                Button("I really need to leave.") {
+                                    if currentExitPhrase.isEmpty {
+                                        currentExitPhrase = generateLongTediousText()
+                                    }
+                                    
                                     withAnimation(.spring(duration: 0.4)) {
                                         showExitPrompt = true
                                     }
@@ -136,7 +199,12 @@ struct CountdownOverlayView: View {
                             }
                             
                             // Shortcut hint — only visible once unlocked
-                            if shortcutUnlocked {
+                            if shortcutUnlocked, let shortcut = currentShortcut {
+                                Text("⌃⇧⌘ + \(shortcut.displayString) to exit")
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(.white.opacity(0.35))
+                                    .transition(.opacity)
+                            } else if shortcutUnlocked {
                                 Text("⌃⇧⌘ + E+S+C to exit")
                                     .font(.system(size: 10))
                                     .foregroundStyle(.white.opacity(0.35))
@@ -201,14 +269,20 @@ struct CountdownOverlayView: View {
                 }
             }
         }
-        .onChange(of: timerManager.currentSession) { _, _ in
+        .onChange(of: timerManager.currentSession, initial: true) { _, _ in
             // Reset all exit-related state for each new session
             shortcutUnlocked = false
             clickCount = 0
             recentKeyTimestamps.removeAll()
             showExitPrompt = false
             exitText = ""
+            currentExitPhrase = ""
             pressedKeys.removeAll()
+            if timerManager.currentSession != .work {
+                currentShortcut = generateRandomShortcut()
+            } else {
+                currentShortcut = nil
+            }
         }
         .ignoresSafeArea()
         .onNSEvent(type: .keyDown) { event in
@@ -231,6 +305,13 @@ struct CountdownOverlayView: View {
             
             // Block Esc from dismissing the window
             if event.keyCode == 53 {
+                if showExitPrompt {
+                    // 加上和展开时一样的动画，让交互更平滑
+                    withAnimation(.spring(duration: 0.4)) {
+                        showExitPrompt = false
+                        exitText = "" // 收起时顺便清空已经输入的字符
+                    }
+                }
                 return true
             }
             
