@@ -60,7 +60,7 @@ struct CountdownOverlayView: View {
         return words.joined(separator: " ")
     }
     
-    private func generateRandomShortcut(letterCount: Int = 5) -> EmergencyShortcut {
+    private func generateRandomShortcut(letterCount: Int = 4) -> EmergencyShortcut {
         var uniqueLetters = Set<String>()
         let allLetters = Array(letterKeyCodes.keys)
         

@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import AppKit
+import UserNotifications
 
 /// Manages the Pomodoro timer state and logic
 @Observable
@@ -51,6 +52,34 @@ class TimerManager {
     init(settings: SettingsManager) {
         self.settings = settings
         self.timeRemaining = settings.duration(for: .work)
+        requestNotificationPermission()
+    }
+    
+    private func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
+            if let error = error {
+                print("Notification permission error: \(error)")
+            }
+        }
+    }
+    
+    private func sendThreeMinuteWarning() {
+        let content = UNMutableNotificationContent()
+        content.title = "工作时间快结束了"
+        content.body = "仅剩三分钟了，请开始收尾工作。"
+        content.sound = .default
+        
+        let request = UNNotificationRequest(
+            identifier: "threeMinuteWarning",
+            content: content,
+            trigger: nil // Deliver immediately
+        )
+        
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("Error sending notification: \(error)")
+            }
+        }
     }
     
     // MARK: - Overlay Actions
@@ -143,6 +172,15 @@ class TimerManager {
     private func tick() {
         if timeRemaining > 0 {
             timeRemaining -= 1
+            
+            // Send a warning notification when 3 minutes (180 seconds) are remaining in a work session
+            if currentSession == .work && timeRemaining == 180 {
+                let totalDuration = settings.duration(for: .work)
+                if totalDuration >= 600 { // Only for sessions 10 minutes or longer
+                    sendThreeMinuteWarning()
+                }
+            }
+            
             if timeRemaining == 0 {
                 sessionCompleted()
             }
